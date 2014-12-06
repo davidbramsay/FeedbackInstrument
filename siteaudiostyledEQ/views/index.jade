@@ -1,0 +1,20 @@
+extends layout
+
+block content
+	div(id="audios")
+		div(class="audioBox")
+			audio(id="you", controls)
+			span(class="labelAudio") self
+			div(class='audioonoff') OFF
+			div(class="sliderBoxRouting")
+				input(type="range", min="0", max="1", step="0.01", data-rangeslider, class="routeSlider")
+		
+	div(id="chatbox")
+		span chatterbox
+		input(id="chatinput", type="text", placeholder="Message:")
+		div(id="messages")
+		
+	canvas(id="canvas", width="1000", height="325", style="display: block;")
+
+	div(class="buttonBox")
+		div(id="newRoom", class="button") Create Your Own Feedback Room
