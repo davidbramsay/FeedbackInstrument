@@ -15,12 +15,55 @@ audio {
     display:none;
 }
 
+#canvasWrap {
+  float:left;
+  width: 76%; 
+  height: 325px; 
+  display: block;
+  border: 3px solid #E08E00;
+  border-radius: 10px;
+  margin-bottom: 5px;
+
+}
+
+canvas {
+  position: relative;
+  overflow:hidden;
+
+}
+
+#effectBox{
+  float: right; 
+  border: 3px solid #E08E00;
+  border-radius: 10px;
+  width: 20%;
+  height: 325px;
+  overflow:hidden;
+
+}
+
+#effectBox span{
+  display:inline-block;
+  margin-top:40px;
+  margin-left:20px;
+  float:left;
+
+}
+
+
+.knobWrapper {
+  float:right;
+  margin: 20px;
+  margin-right: 30px;
+
+
+}
 
 #audios {
   border: 3px solid #E08E00;
   border-radius: 10px;
   width: 76%;
-  height: 600px;
+  min-height: 200px;
   float: left;
 
 }
@@ -104,7 +147,10 @@ audio {
 
 
 
-
+.buttonBox {
+  clear:both;
+  float:left;
+}
 
 
 

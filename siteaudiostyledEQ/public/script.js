@@ -1,38 +1,7 @@
 var audios = [];
 var audioIDs = [];
-
-
-
-window.requestAnimationFrame = (function(){
-return window.requestAnimationFrame  ||
-  window.webkitRequestAnimationFrame ||
-  window.mozRequestAnimationFrame    ||
-  window.oRequestAnimationFrame      ||
-  window.msRequestAnimationFrame     ||
-  function(callback){ 
-  window.setTimeout(callback, 1000 / 60);
-};
-})();
-
-function drawSpectrogram(){
-  var drawContext = document.getElementById('canvas').getContext("2d");
-  var freqDomain = new Uint8Array(analyser.frequencyBinCount);
-
-  analyser.getByteFrequencyData(freqDomain);
-  drawContext.clearRect ( 0 , 0 , canvas.width, canvas.height );
-  for (var i = 0; i < analyser.frequencyBinCount; i++) {
-    var value = freqDomain[i];
-    var percent = value / 256;
-    var height = document.getElementById('canvas').height * percent;
-    var offset = document.getElementById('canvas').height - height - 1;
-    var barWidth = document.getElementById('canvas').width/analyser.frequencyBinCount;
-    var hue = i/analyser.frequencyBinCount * 360;
-    drawContext.fillStyle = 'hsl(' + hue + ', 100%, 50%)';
-    drawContext.fillRect(i * barWidth, offset, barWidth, height);
-  }
-  requestAnimationFrame(drawSpectrogram);
-}
-
+var eqObject =[];
+var delay = [];
 
 var PeerConnection = window.PeerConnection 
     || window.webkitPeerConnection00 
@@ -56,8 +25,8 @@ if (window.hasOwnProperty('webkitAudioContext') &&
 context = new window.AudioContext();
 
 analyser = context.createAnalyser();
-analyser.smoothingTimeConstant = 0.3;
-analyser.fftSize = 1024;
+analyser.smoothingTimeConstant = 0.7;
+analyser.fftSize = 2048;
 
 
 
@@ -228,9 +197,33 @@ function init() {
       video: false
     }, function(stream) {
       document.getElementById('you').src = URL.createObjectURL(stream);
+      
       //initial stream
       var inputStream = context.createMediaStreamSource(stream);
-      inputStream.connect(analyser);  
+      
+      for (var i=0; i <9; i++){
+        var temp=context.createBiquadFilter();
+        eqObject[i] = temp;
+        eqObject[i].type = 'peaking'; //other opts: lowpass,highpass,bandpass, lowshelf, highshelf,notch,allpass
+        eqObject[i].frequency.value = 100;
+        eqObject[i].Q.value = 5;
+        eqObject[i].gain.value = 0;
+      
+      }
+
+      inputStream.connect(eqObject[0]); 
+      
+      for (var i=1; i<9; i++){
+        eqObject[i-1].connect(eqObject[i]); 
+      } 
+
+      eqObject[8].connect(analyser);
+
+      delay = context.createDelay();
+      delay.delayTime.value = 0;
+
+      eqObject[8].connect(delay);
+      delay.connect(context.destination);
 
     });
   } else {
@@ -256,8 +249,6 @@ function init() {
 
   initNewRoom();
   initChat();
-
-  window.requestAnimationFrame(drawSpectrogram);
 
 }
 
@@ -315,6 +306,5 @@ $(function($) {
    initializeAudioToggles();
    initializeLoopSliders();
    $(".routeSlider").val(0.2).change();
-
 
 });
